@@ -5,18 +5,18 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import okhttp3.OkHttpClient
+import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 
 class UploadService : Service() {
 
     private val NOTIFICATION_ID = 1
     private val CHANNEL_ID = "UploadServiceChannel"
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .build()
+
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -25,11 +25,11 @@ class UploadService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         when(intent?.action) {
-            Actions.START.toString() -> start()
+            Actions.START.toString() -> start(intent)
             Actions.STOP.toString() -> stopSelf()
         }
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
 
@@ -37,10 +37,28 @@ class UploadService : Service() {
         START,STOP
     }
 
-    private fun start() {
+    private fun start(intent : Intent) {
 
         val notification = createNotification("Upload starting...")
         startForeground(NOTIFICATION_ID,notification)
+
+
+        val fileUris: ArrayList<String>? = intent?.getStringArrayListExtra("file_uris")
+        val serverUrl = "http://182.18.0.47:3000/upload"
+
+
+        fileUris!!.forEach { fileUri ->
+            val uploadWorkRequest = OneTimeWorkRequestBuilder<FileUploadWorker>()
+                .setInputData(workDataOf(
+                    "file_uri" to fileUri,
+                    "server_url" to serverUrl
+                ))
+                .build()
+
+            WorkManager.getInstance(this).enqueue(uploadWorkRequest)
+        }
+
+
 
     }
 

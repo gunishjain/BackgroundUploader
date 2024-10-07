@@ -37,23 +37,26 @@ class MainActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Button(onClick = {
-                        Intent(applicationContext,UploadService::class.java).also {
-                            it.action = UploadService.Actions.START.toString()
-                            startForegroundService(it)
-                        }
-                    }) {
-                        Text(text = "Start Service")
-                    }
 
-                    Button(onClick = {
-                        Intent(applicationContext,UploadService::class.java).also {
-                            it.action = UploadService.Actions.STOP.toString()
-                            startForegroundService(it)
-                        }
-                    }) {
-                        Text(text = "Stop Service")
-                    }
+                    FileUploadScreen()
+
+//                    Button(onClick = {
+//                        Intent(applicationContext,UploadService::class.java).also {
+//                            it.action = UploadService.Actions.START.toString()
+//                            startForegroundService(it)
+//                        }
+//                    }) {
+//                        Text(text = "Start Service")
+//                    }
+//
+//                    Button(onClick = {
+//                        Intent(applicationContext,UploadService::class.java).also {
+//                            it.action = UploadService.Actions.STOP.toString()
+//                            startForegroundService(it)
+//                        }
+//                    }) {
+//                        Text(text = "Stop Service")
+//                    }
                 }
             }
         }
