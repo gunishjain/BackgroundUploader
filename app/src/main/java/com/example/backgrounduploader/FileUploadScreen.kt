@@ -3,6 +3,7 @@ package com.example.backgrounduploader
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -84,7 +85,12 @@ private fun startUploadService(context: Context, uris: List<Uri>) {
     val intent = Intent(context, UploadService::class.java).apply {
         action = UploadService.Actions.START.toString()
         putStringArrayListExtra("file_uris", fileUris)
+        putExtra("server_url", "http://182.18.0.47:3000/upload")
     }
 
-    ContextCompat.startForegroundService(context, intent)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        context.startForegroundService(intent)
+    } else {
+        context.startService(intent)
+    }
 }
